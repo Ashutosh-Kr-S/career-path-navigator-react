@@ -58,7 +58,7 @@ const Recommendations = () => {
         const text = recommendations.toString();
         
         // Simple parsing based on common patterns in the response
-        const sections: { [key: string]: string[] } = {
+        const sections: { courseList: string[], roadmap: string[], resources: string[] } = {
           courseList: [],
           roadmap: [],
           resources: []

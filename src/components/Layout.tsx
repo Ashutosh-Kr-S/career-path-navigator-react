@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useNavigate, Link } from "react-router-dom";
-import { User, LogOut, Book } from "lucide-react";
+import { User, LogOut, BookOpen } from "lucide-react";
 
 interface LayoutProps {
   children: ReactNode;
@@ -23,7 +23,7 @@ const Layout = ({ children }: LayoutProps) => {
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2">
-            <Book className="h-6 w-6 text-brand-500" />
+            <BookOpen className="h-6 w-6 text-brand-500" />
             <span className="text-xl font-bold text-brand-800">CourseCompass</span>
           </Link>
           

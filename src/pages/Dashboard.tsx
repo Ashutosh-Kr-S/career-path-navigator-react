@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, FileText, Upload, User } from "lucide-react";
+import { ChevronRight, FileText, Upload, User, BookOpen } from "lucide-react";
 
 const Dashboard = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -138,7 +138,7 @@ const Dashboard = () => {
           </div>
           <div className="hidden md:flex items-center justify-center">
             <div className="rounded-full bg-brand-100 p-6 animate-pulse">
-              <Book className="h-16 w-16 text-brand-500" />
+              <BookOpen className="h-16 w-16 text-brand-500" />
             </div>
           </div>
         </div>

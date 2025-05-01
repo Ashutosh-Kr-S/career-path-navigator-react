@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Book, UserPlus } from "lucide-react";
+import { BookOpen, UserPlus } from "lucide-react";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -44,7 +44,7 @@ const Register = () => {
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <div className="flex justify-center">
-            <Book className="h-12 w-12 text-brand-500" />
+            <BookOpen className="h-12 w-12 text-brand-500" />
           </div>
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Create your account</h2>
           <p className="mt-2 text-sm text-gray-600">
