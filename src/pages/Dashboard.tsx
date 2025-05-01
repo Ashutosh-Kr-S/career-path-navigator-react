@@ -1,14 +1,15 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, FileText, Upload, User, BookOpen } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 const Dashboard = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [hasProfile, setHasProfile] = useState(false);
 
   useEffect(() => {
@@ -19,8 +20,16 @@ const Dashboard = () => {
     // Check if user has completed profile
     if (user?.user_data && user.user_data.career_goal) {
       setHasProfile(true);
+    } else {
+      // If user is authenticated but hasn't completed profile, show toast suggestion
+      if (!isLoading && isAuthenticated && user) {
+        toast({
+          title: "Complete your profile",
+          description: "Fill out your profile to get personalized course recommendations",
+        });
+      }
     }
-  }, [isAuthenticated, isLoading, navigate, user]);
+  }, [isAuthenticated, isLoading, navigate, user, toast]);
 
   if (isLoading) {
     return (

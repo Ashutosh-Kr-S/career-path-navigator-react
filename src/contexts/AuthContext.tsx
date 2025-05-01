@@ -10,6 +10,7 @@ interface AuthContextType {
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
+  refreshUserProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,29 +20,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
+  const fetchUser = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const userData = await getUserProfile();
+      setUser(userData);
+    } catch (error) {
+      localStorage.removeItem("token");
+      toast({
+        title: "Session expired",
+        description: "Please login again",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        const userData = await getUserProfile();
-        setUser(userData);
-      } catch (error) {
-        localStorage.removeItem("token");
-        toast({
-          title: "Session expired",
-          description: "Please login again",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchUser();
   }, [toast]);
 
@@ -106,6 +107,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const refreshUserProfile = async () => {
+    try {
+      const userData = await getUserProfile();
+      setUser(userData);
+      return userData;
+    } catch (error) {
+      console.error("Error refreshing user profile:", error);
+      throw error;
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -115,6 +127,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         login: handleLogin,
         register: handleRegister,
         logout: handleLogout,
+        refreshUserProfile,
       }}
     >
       {children}

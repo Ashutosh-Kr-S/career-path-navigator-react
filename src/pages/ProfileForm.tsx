@@ -10,11 +10,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
-import { submitProfile, getUserProfile } from "@/lib/api";
+import { submitProfile } from "@/lib/api";
 import { useToast } from "@/components/ui/use-toast";
 
 const ProfileForm = () => {
-  const { isAuthenticated, isLoading, user } = useAuth();
+  const { isAuthenticated, isLoading, user, refreshUserProfile } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -36,11 +36,11 @@ const ProfileForm = () => {
   
   const [currentSkill, setCurrentSkill] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [recommendations, setRecommendations] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       navigate("/login");
+      return;
     }
     
     // Pre-fill form with user data if available
@@ -52,7 +52,7 @@ const ProfileForm = () => {
       }));
       
       // If user has already filled profile data, pre-fill the form
-      if (user.user_data && user.user_data.career_goal) {
+      if (user.user_data) {
         const userData = user.user_data;
         setFormData(prev => ({
           ...prev,
@@ -104,18 +104,22 @@ const ProfileForm = () => {
     
     try {
       const response = await submitProfile(formData);
-      setRecommendations(response.prediction);
+      
+      // Refresh user profile to get latest data
+      await refreshUserProfile();
+      
       toast({
         title: "Profile submitted successfully",
         description: "Your course recommendations are ready!",
       });
+      
       // Navigate to recommendations page and pass the data
       navigate("/recommendations", { state: { recommendations: response.prediction } });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error submitting profile:", error);
       toast({
         title: "Submission failed",
-        description: "There was an error processing your profile information.",
+        description: error.message || "There was an error processing your profile information.",
         variant: "destructive",
       });
     } finally {

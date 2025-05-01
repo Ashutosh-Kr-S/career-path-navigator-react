@@ -1,5 +1,4 @@
-
-const API_URL = "http://localhost:3000"; // Change to your Flask backend URL
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000"; // Change to your Flask backend URL
 
 export type LoginCredentials = {
   email: string;
@@ -82,9 +81,14 @@ export const logout = async (): Promise<any> => {
 };
 
 export const getUserProfile = async (): Promise<any> => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    throw new Error('No authentication token found');
+  }
+  
   const response = await fetch(`${API_URL}/`, {
     headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      'Authorization': `Bearer ${token}`,
     },
   });
   
@@ -93,6 +97,11 @@ export const getUserProfile = async (): Promise<any> => {
 
 // Prediction and profile functions
 export const submitProfile = async (data: ProfileFormData): Promise<any> => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    throw new Error('No authentication token found');
+  }
+
   const formData = new FormData();
   
   Object.entries(data).forEach(([key, value]) => {
@@ -108,7 +117,7 @@ export const submitProfile = async (data: ProfileFormData): Promise<any> => {
   const response = await fetch(`${API_URL}/predict`, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      'Authorization': `Bearer ${token}`,
     },
     body: formData,
   });
@@ -117,6 +126,11 @@ export const submitProfile = async (data: ProfileFormData): Promise<any> => {
 };
 
 export const uploadResume = async (data: ResumeUploadData): Promise<any> => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    throw new Error('No authentication token found');
+  }
+
   const formData = new FormData();
   formData.append('pdf_file', data.pdf_file);
   formData.append('goal', data.goal);
@@ -124,7 +138,7 @@ export const uploadResume = async (data: ResumeUploadData): Promise<any> => {
   const response = await fetch(`${API_URL}/upload`, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      'Authorization': `Bearer ${token}`,
     },
     body: formData,
   });

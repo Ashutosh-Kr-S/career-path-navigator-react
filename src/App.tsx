@@ -17,8 +17,57 @@ import ProfileForm from "./pages/ProfileForm";
 import ResumeUpload from "./pages/ResumeUpload";
 import Recommendations from "./pages/Recommendations";
 import NotFound from "./pages/NotFound";
+import { useAuth } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
+
+// Protected route component to redirect unauthenticated users
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) return (
+    <div className="min-h-[70vh] flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-500 mx-auto"></div>
+        <p className="mt-4 text-lg text-gray-600">Loading...</p>
+      </div>
+    </div>
+  );
+  
+  if (!isAuthenticated) return <Navigate to="/login" />;
+  
+  return <>{children}</>;
+};
+
+const AppRoutes = () => (
+  <Routes>
+    <Route path="/" element={<Landing />} />
+    <Route path="/about" element={<About />} />
+    <Route path="/login" element={<Login />} />
+    <Route path="/register" element={<Register />} />
+    <Route path="/dashboard" element={
+      <ProtectedRoute>
+        <Dashboard />
+      </ProtectedRoute>
+    } />
+    <Route path="/profile" element={
+      <ProtectedRoute>
+        <ProfileForm />
+      </ProtectedRoute>
+    } />
+    <Route path="/resume" element={
+      <ProtectedRoute>
+        <ResumeUpload />
+      </ProtectedRoute>
+    } />
+    <Route path="/recommendations" element={
+      <ProtectedRoute>
+        <Recommendations />
+      </ProtectedRoute>
+    } />
+    <Route path="*" element={<NotFound />} />
+  </Routes>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -28,17 +77,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Layout>
-            <Routes>
-              <Route path="/" element={<Landing />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/profile" element={<ProfileForm />} />
-              <Route path="/resume" element={<ResumeUpload />} />
-              <Route path="/recommendations" element={<Recommendations />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <AppRoutes />
           </Layout>
         </AuthProvider>
       </BrowserRouter>
